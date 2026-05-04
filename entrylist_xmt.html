@@ -182,88 +182,97 @@
   </main>
 
   <script>
-    async function loadCSV() {
-      const tbody = document.getElementById('pilotsTableBody');
-      const status = document.getElementById('status');
+  async function loadCSV() {
+    const tbody = document.getElementById('pilotsTableBody');
+    const status = document.getElementById('status');
 
-      try {
-        const response = await fetch('./entrylist_xmt.csv');
+    try {
+      const response = await fetch('./entrylist_xmt.csv?' + Date.now());
 
-        if (!response.ok) {
-          throw new Error('Fichier CSV introuvable');
-        }
-
-        const csvText = await response.text();
-        const lines = csvText
-          .split(/\r?\n/)
-          .map(line => line.trim())
-          .filter(line => line.length > 0);
-
-        if (lines.length < 2) {
-          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucune donnée trouvée dans le CSV.</td></tr>';
-          status.textContent = 'CSV chargé, mais vide.';
-          status.className = 'status';
-          return;
-        }
-
-        const headers = lines[0].split(';').map(h => h.trim().replace(/^"|"$/g, ''));
-        const separator = headers.length >= 3 ? ';' : ',';
-        const finalHeaders = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
-
-        const pseudoIndex = finalHeaders.findIndex(h => h.toLowerCase() === 'pseudo');
-        const numeroIndex = finalHeaders.findIndex(h => h.toLowerCase() === 'numero' || h.toLowerCase() === 'numero');
-        const pointsIndex = finalHeaders.findIndex(h => h.toLowerCase() === 'points licence' || h.toLowerCase() === 'points license');
-
-        if (pseudoIndex === -1 || numeroIndex === -1 || pointsIndex === -1) {
-          throw new Error('Colonnes attendues : Pseudo, Numéro, Points Licence');
-        }
-
-        const rows = lines.slice(1)
-          .map(line => line.split(separator).map(cell => cell.trim().replace(/^"|"$/g, '')))
-          .filter(cols => cols.some(cell => cell !== ''));
-
-        if (rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucun pilote trouvé.</td></tr>';
-          status.textContent = 'CSV chargé, mais aucune ligne exploitable.';
-          status.className = 'status';
-          return;
-        }
-
-        tbody.innerHTML = '';
-
-        rows.forEach(cols => {
-          const pseudo = cols[pseudoIndex] || '—';
-          const numero = cols[numeroIndex] || '—';
-          const points = cols[pointsIndex] || '—';
-
-          const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td>${escapeHtml(pseudo)}</td>
-            <td class="number-col">${escapeHtml(numero)}</td>
-            <td><span class="points">${escapeHtml(points)}</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        status.textContent = `${rows.length} pilote(s) chargé(s) depuis entrylist_xmt.csv.`;
-        status.className = 'status success';
-      } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger les pilotes.</td></tr>';
-        status.textContent = 'Erreur : ' + error.message;
-        status.className = 'status error';
+      if (!response.ok) {
+        throw new Error('Fichier CSV introuvable');
       }
-    }
 
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
+      const csvText = await response.text();
 
-    loadCSV();
-  </script>
+      const normalizedText = csvText
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .trim();
+
+      const lines = normalizedText
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0);
+
+      if (lines.length < 2) {
+        tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucune donnée trouvée dans le CSV.</td></tr>';
+        status.textContent = 'CSV chargé, mais vide.';
+        status.className = 'status';
+        return;
+      }
+
+      const separator = lines[0].includes(';') ? ';' : ',';
+
+      const headers = lines[0]
+        .split(separator)
+        .map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
+
+      const pseudoIndex = headers.findIndex(h => h === 'pseudo');
+      const numeroIndex = headers.findIndex(h => h === 'numéro' || h === 'numero');
+      const pointsIndex = headers.findIndex(h => h === 'points licence');
+
+      if (pseudoIndex === -1 || numeroIndex === -1 || pointsIndex === -1) {
+        throw new Error('Colonnes attendues : pseudo, numero, points licence');
+      }
+
+      const rows = lines.slice(1)
+        .map(line => line.split(separator).map(cell => cell.trim().replace(/^"|"$/g, '')))
+        .filter(cols => cols.some(cell => cell !== ''));
+
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucun pilote trouvé.</td></tr>';
+        status.textContent = 'CSV chargé, mais aucune ligne exploitable.';
+        status.className = 'status';
+        return;
+      }
+
+      tbody.innerHTML = '';
+
+      rows.forEach(cols => {
+        const pseudo = cols[pseudoIndex] || '—';
+        const numero = cols[numeroIndex] || '—';
+        const points = cols[pointsIndex] || '—';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(pseudo)}</td>
+          <td class="number-col">${escapeHtml(numero)}</td>
+          <td><span class="points">${escapeHtml(points)}</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      status.textContent = `${rows.length} pilote(s) chargé(s) depuis entrylist_xmt.csv.`;
+      status.className = 'status success';
+    } catch (error) {
+      tbody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger les pilotes.</td></tr>';
+      status.textContent = 'Erreur : ' + error.message;
+      status.className = 'status error';
+      console.error(error);
+    }
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  loadCSV();
+</script>
 </body>
 </html>
