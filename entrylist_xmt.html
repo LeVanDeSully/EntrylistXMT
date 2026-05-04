@@ -13,6 +13,8 @@
       --accent: #8a0f8f;
       --accent-2: #c13bc6;
       --border: rgba(255, 255, 255, 0.1);
+      --success: #8cffb1;
+      --error: #ffb3b3;
     }
 
     * {
@@ -99,6 +101,11 @@
       width: 180px;
     }
 
+    .number-col, th.number-col {
+      text-align: center;
+      width: 160px;
+    }
+
     .points {
       display: inline-block;
       min-width: 54px;
@@ -122,6 +129,22 @@
       opacity: 0.8;
       font-style: italic;
     }
+
+    .status {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .status.error {
+      color: var(--error);
+    }
+
+    .status.success {
+      color: var(--success);
+    }
   </style>
 </head>
 <body>
@@ -129,41 +152,25 @@
     <section class="hero">
       <h1>Liste pilotes XMT</h1>
       <p>
-        Vous pouvez retrouver dans le lien ci-dessous la liste des pseudo de tous les pilotes ayant fait leur
-        entrylist pour participer aux courses XMT ainsi que le nombre de points que chaque pilote possède sur sa licence.
+        Vous pouvez retrouver ci-dessous la liste des pseudo de tous les pilotes ayant fait leur
+        entrylist pour participer aux courses XMT ainsi que leur numéro et le nombre de points licence.
       </p>
     </section>
 
     <section class="table-card">
+      <div id="status" class="status">Chargement du fichier CSV...</div>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Pseudo</th>
-              <th>Catégorie</th>
+              <th class="number-col">Numéro</th>
               <th>Points licence</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="pilotsTableBody">
             <tr>
-              <td>ExemplePilote1</td>
-              <td>GT3</td>
-              <td><span class="points">12</span></td>
-            </tr>
-            <tr>
-              <td>ExemplePilote2</td>
-              <td>GT4</td>
-              <td><span class="points">8</span></td>
-            </tr>
-            <tr>
-              <td>ExemplePilote3</td>
-              <td>Open</td>
-              <td><span class="points">15</span></td>
-            </tr>
-            <tr>
-              <td class="empty">À compléter</td>
-              <td class="empty">—</td>
-              <td class="empty">—</td>
+              <td colspan="3" class="empty">Chargement des pilotes...</td>
             </tr>
           </tbody>
         </table>
@@ -173,5 +180,90 @@
       </div>
     </section>
   </main>
+
+  <script>
+    async function loadCSV() {
+      const tbody = document.getElementById('pilotsTableBody');
+      const status = document.getElementById('status');
+
+      try {
+        const response = await fetch('./entrylist_xmt.csv');
+
+        if (!response.ok) {
+          throw new Error('Fichier CSV introuvable');
+        }
+
+        const csvText = await response.text();
+        const lines = csvText
+          .split(/\r?\n/)
+          .map(line => line.trim())
+          .filter(line => line.length > 0);
+
+        if (lines.length < 2) {
+          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucune donnée trouvée dans le CSV.</td></tr>';
+          status.textContent = 'CSV chargé, mais vide.';
+          status.className = 'status';
+          return;
+        }
+
+        const headers = lines[0].split(';').map(h => h.trim().replace(/^"|"$/g, ''));
+        const separator = headers.length >= 3 ? ';' : ',';
+        const finalHeaders = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
+
+        const pseudoIndex = finalHeaders.findIndex(h => h.toLowerCase() === 'pseudo');
+        const numeroIndex = finalHeaders.findIndex(h => h.toLowerCase() === 'numero' || h.toLowerCase() === 'numero');
+        const pointsIndex = finalHeaders.findIndex(h => h.toLowerCase() === 'points licence' || h.toLowerCase() === 'points license');
+
+        if (pseudoIndex === -1 || numeroIndex === -1 || pointsIndex === -1) {
+          throw new Error('Colonnes attendues : Pseudo, Numéro, Points Licence');
+        }
+
+        const rows = lines.slice(1)
+          .map(line => line.split(separator).map(cell => cell.trim().replace(/^"|"$/g, '')))
+          .filter(cols => cols.some(cell => cell !== ''));
+
+        if (rows.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucun pilote trouvé.</td></tr>';
+          status.textContent = 'CSV chargé, mais aucune ligne exploitable.';
+          status.className = 'status';
+          return;
+        }
+
+        tbody.innerHTML = '';
+
+        rows.forEach(cols => {
+          const pseudo = cols[pseudoIndex] || '—';
+          const numero = cols[numeroIndex] || '—';
+          const points = cols[pointsIndex] || '—';
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${escapeHtml(pseudo)}</td>
+            <td class="number-col">${escapeHtml(numero)}</td>
+            <td><span class="points">${escapeHtml(points)}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        status.textContent = `${rows.length} pilote(s) chargé(s) depuis entrylist_xmt.csv.`;
+        status.className = 'status success';
+      } catch (error) {
+        tbody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger les pilotes.</td></tr>';
+        status.textContent = 'Erreur : ' + error.message;
+        status.className = 'status error';
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    loadCSV();
+  </script>
 </body>
 </html>
