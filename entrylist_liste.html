@@ -94,15 +94,15 @@
       width: 400px;
       pointer-events: none;
       z-index: -1;
-      opacity: 0.12;
-      filter: blur(1.5px) drop-shadow(0 0 20px rgba(255,63,215,0.6));
+      opacity: 0.28;
+      filter: blur(0.5px) drop-shadow(0 0 20px rgba(255,63,215,0.6));
       animation: bgCarDrive 18s linear infinite;
     }
 
     /* ══ ROAD + FOREGROUND CAR ══ */
     .race-scene {
       position: fixed; left: 0; right: 0; bottom: 0;
-      height: min(26vh, 210px); pointer-events: none; overflow: hidden; z-index: 0;
+      height: min(26vh, 210px); pointer-events: none; overflow: hidden; z-index: 10;
     }
 
     .road {
@@ -623,14 +623,8 @@
         pilots.forEach((p, i) => {
           const tr = document.createElement("tr");
           tr.style.animationDelay = (i * 0.045) + "s";
-          const initials = (p.pseudo || "?").slice(0, 2).toUpperCase();
           tr.innerHTML = `
-            <td>
-              <div class="pseudo-cell">
-                <div class="avatar">${esc(initials)}</div>
-                <span class="pseudo-name">${esc(p.pseudo)}</span>
-              </div>
-            </td>
+            <td>${esc(p.pseudo)}</td>
             <td class="num-col"><span class="num-badge">${esc(p.numero)}</span></td>
             <td><span class="pts-badge"><span class="pts-dot"></span>${esc(p.points)}</span></td>`;
           tableBody.appendChild(tr);
