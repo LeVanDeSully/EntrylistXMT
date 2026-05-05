@@ -543,21 +543,55 @@
 
         <div id="status" class="status" role="alert"></div>
       </form>
+
+      <!-- Écran de confirmation (caché par défaut) -->
+      <div id="successScreen" style="display:none; text-align:center; padding: 12px 0;">
+        <div style="font-size:3rem; margin-bottom:12px; animation: successPop 0.6s cubic-bezier(.2,1.4,.4,1) both;">🏁</div>
+        <h2 style="font-size:1.4rem; margin-bottom:8px; background:linear-gradient(92deg,#fff,#8cffb1); -webkit-background-clip:text; background-clip:text; color:transparent;">Entrylist enregistrée !</h2>
+        <p style="color:var(--muted); font-size:0.9rem; margin-bottom:6px;">Bienvenue sur la grille, <strong id="confirmedPseudo" style="color:#fff;"></strong> !</p>
+        <p style="color:var(--muted); font-size:0.85rem; margin-bottom:22px;">N° Pilote : <strong id="confirmedNumero" style="color:var(--accent-3);"></strong></p>
+        <a href="entrylist_liste.html" class="btn" style="display:inline-flex;">Voir la liste des pilotes</a>
+      </div>
     </div>
   </main>
 
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTILGoua3WpneTTlu1r06tE5_aJeJvfam6XYk4rSWklXsgnNYIpr8NFui87-AObu_3cg/exec";
+    const STORAGE_KEY = "xmt_entrylist_submitted";
 
-    const form        = document.getElementById("entryForm");
-    const statusEl    = document.getElementById("status");
-    const submitBtn   = document.getElementById("submitBtn");
-    const pseudoHint  = document.getElementById("pseudoHint");
-    const numeroHint  = document.getElementById("numeroHint");
-    const platformHint= document.getElementById("platformHint");
+    const form          = document.getElementById("entryForm");
+    const statusEl      = document.getElementById("status");
+    const submitBtn     = document.getElementById("submitBtn");
+    const pseudoHint    = document.getElementById("pseudoHint");
+    const numeroHint    = document.getElementById("numeroHint");
+    const platformHint  = document.getElementById("platformHint");
+    const successScreen = document.getElementById("successScreen");
 
-    // ── Fetch list for duplicate check ──
+    // ── Anti-spam : déjà soumis ? ──
+    function checkAlreadySubmitted() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved && saved.pseudo) {
+          showSuccess(saved.pseudo, saved.numero);
+          return true;
+        }
+      } catch (_) {}
+      return false;
+    }
+
+    function showSuccess(pseudo, numero) {
+      form.style.display = "none";
+      document.getElementById("confirmedPseudo").textContent = pseudo;
+      document.getElementById("confirmedNumero").textContent = numero;
+      successScreen.style.display = "block";
+    }
+
+    // Vérification au chargement
+    checkAlreadySubmitted();
+
+    // ── Fetch list pour doublon ──
     let cachedList = null;
+    let submitting = false; // anti double-clic
 
     async function getList() {
       if (!cachedList) cachedList = fetchList();
@@ -565,18 +599,15 @@
     }
 
     async function fetchList() {
-      // Try direct fetch first (CORS)
       try {
         const res = await fetch(WEB_APP_URL + "?action=list&_=" + Date.now());
         if (res.ok) return normalizeList(await res.json());
       } catch (_) {}
-
-      // Fallback: JSONP
       return new Promise((resolve) => {
         const cb = "xmtChk_" + Date.now();
         const script = document.createElement("script");
         const timer = setTimeout(() => { delete window[cb]; script.remove(); resolve([]); }, 8000);
-        window[cb] = (data) => { clearTimeout(timer); delete window[cb]; script.remove(); resolve(normalizeList(data)); };
+        window[cb] = (d) => { clearTimeout(timer); delete window[cb]; script.remove(); resolve(normalizeList(d)); };
         script.src = WEB_APP_URL + "?action=list&callback=" + cb + "&_=" + Date.now();
         document.head.appendChild(script);
       });
@@ -584,35 +615,21 @@
 
     function normalizeList(raw) {
       if (!raw) return [];
-      const rows = Array.isArray(raw.rows) ? raw.rows
-                 : Array.isArray(raw.data)  ? raw.data
-                 : Array.isArray(raw)        ? raw
-                 : [];
-      return rows.map(r => {
-        if (Array.isArray(r)) {
-          // [timestamp, pseudo, id, numeroPilote, pointsLicence]
-          return { pseudo: String(r[1] || "").toLowerCase(), numero: String(r[3] || "") };
-        }
-        return {
-          pseudo: String(r.pseudo || r.nom || r.pilote || "").toLowerCase(),
-          numero: String(r.numeroPilote || r.numero || r.num || "")
-        };
-      });
+      const rows = Array.isArray(raw.rows) ? raw.rows : Array.isArray(raw.data) ? raw.data : Array.isArray(raw) ? raw : [];
+      return rows.map(r => Array.isArray(r)
+        ? { pseudo: String(r[1]||"").toLowerCase(), numero: String(r[3]||"") }
+        : { pseudo: String(r.pseudo||r.nom||r.pilote||"").toLowerCase(), numero: String(r.numeroPilote||r.numero||r.num||"") }
+      );
     }
 
-    // ── Real-time duplicate hints ──
+    // ── Hints en temps réel ──
     document.getElementById("pseudo").addEventListener("blur", async () => {
       const val = document.getElementById("pseudo").value.trim().toLowerCase();
       if (!val) return;
       try {
         const list = await getList();
-        if (list.some(r => r.pseudo === val)) {
-          pseudoHint.textContent = "Ce pseudo est déjà utilisé.";
-          pseudoHint.className = "field-hint error";
-        } else {
-          pseudoHint.textContent = "Pseudo disponible ✓";
-          pseudoHint.className = "field-hint success";
-        }
+        pseudoHint.textContent = list.some(r => r.pseudo === val) ? "Ce pseudo est déjà utilisé." : "Pseudo disponible ✓";
+        pseudoHint.className = "field-hint " + (list.some(r => r.pseudo === val) ? "error" : "success");
       } catch (_) {}
     });
 
@@ -621,26 +638,21 @@
       if (!val) return;
       try {
         const list = await getList();
-        if (list.some(r => r.numero === val)) {
-          numeroHint.textContent = "Ce numéro de pilote est déjà utilisé.";
-          numeroHint.className = "field-hint error";
-        } else {
-          numeroHint.textContent = "Numéro disponible ✓";
-          numeroHint.className = "field-hint success";
-        }
+        numeroHint.textContent = list.some(r => r.numero === val) ? "Ce numéro est déjà utilisé." : "Numéro disponible ✓";
+        numeroHint.className = "field-hint " + (list.some(r => r.numero === val) ? "error" : "success");
       } catch (_) {}
     });
 
     // ── Submit ──
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (submitting) return; // anti double-clic
 
       const platform     = form.querySelector('input[name="platform"]:checked');
       const pseudo       = document.getElementById("pseudo").value.trim();
       const idRaw        = document.getElementById("id").value.trim();
       const numeroPilote = document.getElementById("numeroPilote").value.trim();
 
-      // Validation
       if (!platform) {
         platformHint.textContent = "Veuillez choisir une plateforme.";
         platformHint.className = "field-hint error";
@@ -654,36 +666,31 @@
         return;
       }
 
+      submitting = true;
       submitBtn.disabled = true;
       statusEl.textContent = "Vérification en cours...";
       statusEl.className = "status";
 
-      // Duplicate check
+      // Doublon check
       try {
         const list = await getList();
         if (list.some(r => r.pseudo === pseudo.toLowerCase())) {
-          statusEl.textContent = "Ce pseudo est déjà utilisé. Veuillez en choisir un autre.";
+          statusEl.textContent = "Ce pseudo est déjà utilisé.";
           statusEl.className = "status error";
           pseudoHint.textContent = "Ce pseudo est déjà utilisé.";
           pseudoHint.className = "field-hint error";
-          submitBtn.disabled = false;
-          return;
+          submitting = false; submitBtn.disabled = false; return;
         }
         if (list.some(r => r.numero === numeroPilote)) {
-          statusEl.textContent = "Ce numéro de pilote est déjà utilisé. Veuillez en choisir un autre.";
+          statusEl.textContent = "Ce numéro de pilote est déjà utilisé.";
           statusEl.className = "status error";
-          numeroHint.textContent = "Ce numéro de pilote est déjà utilisé.";
+          numeroHint.textContent = "Ce numéro est déjà utilisé.";
           numeroHint.className = "field-hint error";
-          submitBtn.disabled = false;
-          return;
+          submitting = false; submitBtn.disabled = false; return;
         }
-      } catch (_) {
-        // Si vérification impossible, on laisse le serveur décider
-      }
+      } catch (_) {}
 
-      // Prefix ID: PSN → P, XBOX → M
       const idFinal = (platform.value === "PSN" ? "P" : "M") + idRaw;
-
       statusEl.textContent = "Envoi en cours...";
 
       const formData = new FormData();
@@ -696,21 +703,26 @@
       try {
         await fetch(WEB_APP_URL, { method: "POST", mode: "no-cors", body: formData });
 
-        statusEl.textContent = "Entrylist envoyé avec succès !";
-        statusEl.className = "status success";
-        form.reset();
-        pseudoHint.className = "field-hint";
-        numeroHint.className = "field-hint";
-        cachedList = null; // invalide le cache
+        // Sauvegarder en localStorage pour éviter le spam
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ pseudo, numero: numeroPilote, time: Date.now() })); } catch (_) {}
+
+        // Afficher l'écran de succès
+        showSuccess(pseudo, numeroPilote);
 
       } catch (err) {
         console.error(err);
         statusEl.textContent = "Erreur lors de l'envoi. Merci de réessayer.";
         statusEl.className = "status error";
-      } finally {
+        submitting = false;
         submitBtn.disabled = false;
       }
     });
   </script>
+  <style>
+    @keyframes successPop {
+      from { transform: scale(0) rotate(-20deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+  </style>
 </body>
 </html>
