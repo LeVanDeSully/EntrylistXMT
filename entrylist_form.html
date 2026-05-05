@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entrylist XMT – Formulaire</title>
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --card: #14141b;
+      --text: #f4f4f7;
+      --muted: #b8b8c6;
+      --accent: #8a0f8f;
+      --accent-2: #c13bc6;
+      --border: rgba(255, 255, 255, 0.1);
+      --success: #8cffb1;
+      --error: #ffb3b3;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: radial-gradient(circle at top, #181824 0%, var(--bg) 55%);
+      color: var(--text);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 48px 20px 60px;
+    }
+
+    .card {
+      background: rgba(20, 20, 27, 0.92);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 32px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    label {
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #101018;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--accent-2);
+      box-shadow: 0 0 0 1px rgba(193, 59, 198, 0.5);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.95rem;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--muted);
+    }
+
+    .status {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--error);
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="card">
+      <h1>Entrylist pilote</h1>
+      <p>
+        Merci de remplir ce formulaire pour vous inscrire sur l’entrylist XMT.  
+        Les données seront envoyées automatiquement dans la feuille Google Sheets.
+      </p>
+
+      <form id="entryForm">
+        <div>
+          <label for="gamertag">GamerTag</label>
+          <input id="gamertag" name="gamertag" type="text" required />
+        </div>
+
+        <div>
+          <label for="pseudo">Pseudo (affiché en jeu)</label>
+          <input id="pseudo" name="pseudo" type="text" required />
+        </div>
+
+        <div>
+          <label for="id">ID</label>
+          <input id="id" name="id" type="text" required />
+        </div>
+
+        <div>
+          <label for="numeroPilote">N° pilote</label>
+          <input id="numeroPilote" name="numeroPilote" type="number" min="0" required />
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn">Envoyer mon entrylist</button>
+          <a href="entrylist_liste.html" class="btn btn-secondary">Liste complète</a>
+        </div>
+
+        <div id="status" class="status"></div>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    // URL de ton Apps Script Web App (déploiement doPost)
+    const WEB_APP_URL = "https://docs.google.com/spreadsheets/d/17R6sZG_6msXugH3wUyLi_bWH0ukmXRikl0jOTFF1I0M/edit?usp=sharing";
+
+    const form = document.getElementById("entryForm");
+    const statusEl = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        gamertag: form.gamertag.value.trim(),
+        pseudo: form.pseudo.value.trim(),
+        id: form.id.value.trim(),
+        numeroPilote: form.numeroPilote.value.trim()
+      };
+
+      if (!data.gamertag || !data.pseudo || !data.id || !data.numeroPilote) {
+        statusEl.textContent = "Merci de remplir tous les champs.";
+        statusEl.className = "status error";
+        return;
+      }
+
+      statusEl.textContent = "Envoi en cours...";
+      statusEl.className = "status";
+
+      const params = new URLSearchParams(data);
+
+      try {
+        await fetch(WEB_APP_URL + "?" + params.toString(), {
+          method: "GET",
+          mode: "no-cors"
+        });
+
+        statusEl.textContent = "Entrylist envoyé !";
+        statusEl.className = "status success";
+
+        form.reset();
+
+      } catch (error) {
+        console.error(error);
+        statusEl.textContent = "Erreur lors de l'envoi. Merci de réessayer.";
+        statusEl.className = "status error";
+      }
+    });
+  </script>
+</body>
+</html>
