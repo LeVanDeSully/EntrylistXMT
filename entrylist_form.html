@@ -669,6 +669,15 @@
         return;
       }
 
+      const numVal = parseInt(numeroPilote);
+      if (isNaN(numVal) || numVal < 1 || numVal > 999) {
+        statusEl.textContent = "Le numéro de pilote doit être compris entre 1 et 999.";
+        statusEl.className = "status error";
+        document.getElementById("numeroPilote").focus();
+        submitting = false; submitBtn.disabled = false;
+        return;
+      }
+
       submitting = true;
       submitBtn.disabled = true;
       statusEl.textContent = "Vérification en cours...";
