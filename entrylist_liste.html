@@ -377,8 +377,8 @@
         <table>
           <thead>
             <tr>
-              <th class="numero-col">#</th>
               <th>Pseudo</th>
+              <th class="numero-col">Numéro</th>
               <th>Points Licence</th>
             </tr>
           </thead>
@@ -420,8 +420,8 @@
         pilots.forEach(p => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-            <td class="numero-col">${esc(p.numero)}</td>
             <td>${esc(p.pseudo)}</td>
+            <td class="numero-col">${esc(p.numero)}</td>
             <td><span class="points-badge">${esc(p.points)}</span></td>`;
           tableBody.appendChild(tr);
         });
@@ -440,9 +440,8 @@
           cardList.appendChild(div);
         });
 
-        const badge = `<span class="count-badge">${pilots.length} pilote${pilots.length > 1 ? "s" : ""}</span>`;
-        statusBar.innerHTML = badge + " inscrits";
-        statusBar.className = "status-bar success";
+        statusBar.textContent = "";
+        statusBar.className = "status-bar";
 
       } catch (err) {
         tableBody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger la liste.</td></tr>';
@@ -499,7 +498,8 @@
             ? { pseudo: r[findH(first,["pseudo","nom"])] || "", numero: r[findH(first,["numeropilote","numero","num"])] || "", points: r[findH(first,["pointslicence","points"])] || "10" }
             : { pseudo: r[1] || "", numero: r[3] || "", points: r[4] || "10" }
           )
-          .filter(p => p.pseudo || p.numero);
+          .filter(p => p.pseudo || p.numero)
+          .sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
       }
 
       return source
@@ -509,7 +509,8 @@
           numero:  pick(r, ["numeroPilote","numero","num","n","number"]),
           points:  pick(r, ["pointsLicence","points","licence"]) || "10"
         }))
-        .filter(p => p.pseudo || p.numero);
+        .filter(p => p.pseudo || p.numero)
+        .sort((a, b) => parseInt(a.numero) - parseInt(b.numero));
     }
 
     function pick(obj, keys) {
