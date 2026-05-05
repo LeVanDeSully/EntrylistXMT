@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Entrylist XMT</title>
+  <title>Entrylist XMT – Liste Pilotes</title>
+  <link rel="icon" type="image/png" href="xmt-logo.png" />
   <style>
     :root {
       --bg: #0b0b0f;
@@ -14,31 +15,27 @@
       --accent-2: #c13bc6;
       --accent-3: #45d6ff;
       --hot: #ff3fd7;
-      --border: rgba(255, 255, 255, 0.1);
+      --border: rgba(255,255,255,0.1);
       --success: #8cffb1;
       --error: #ffb3b3;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      margin: 0;
       font-family: Arial, Helvetica, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
       background:
-        linear-gradient(90deg, rgba(3, 4, 8, 0.82), rgba(8, 8, 14, 0.42) 44%, rgba(4, 5, 9, 0.88)),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0.72)),
+        linear-gradient(90deg, rgba(3,4,8,0.82), rgba(8,8,14,0.42) 44%, rgba(4,5,9,0.88)),
+        linear-gradient(180deg, rgba(0,0,0,0.42), rgba(0,0,0,0.72)),
         url("xmt-gt3-showroom.png") center center / cover fixed no-repeat,
         #07070c;
       color: var(--text);
       isolation: isolate;
     }
 
-    body::before,
-    body::after {
+    body::before, body::after {
       content: "";
       position: fixed;
       inset: 0;
@@ -48,283 +45,205 @@
 
     body::before {
       background:
-        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
       background-size: 58px 58px;
-      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), transparent 82%);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.85), transparent 82%);
       animation: gridDrift 18s linear infinite;
     }
 
     body::after {
       background:
-        linear-gradient(115deg, transparent 0 36%, rgba(255, 255, 255, 0.1) 37%, transparent 39% 100%),
-        linear-gradient(115deg, transparent 0 64%, rgba(69, 214, 255, 0.12) 65%, transparent 67% 100%);
+        linear-gradient(115deg, transparent 0 36%, rgba(255,255,255,0.1) 37%, transparent 39% 100%),
+        linear-gradient(115deg, transparent 0 64%, rgba(69,214,255,0.12) 65%, transparent 67% 100%);
       transform: translateX(-18%);
       animation: speedLines 7s ease-in-out infinite;
     }
 
     .showroom-bg {
-      position: fixed;
-      inset: -4%;
-      z-index: -3;
-      pointer-events: none;
+      position: fixed; inset: -4%; z-index: -3; pointer-events: none;
       background: url("xmt-gt3-showroom.png") center center / cover no-repeat;
       filter: saturate(1.08) contrast(1.05);
-      transform-origin: center;
       animation: showroomMove 18s ease-in-out infinite alternate;
     }
 
     .race-scene {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: min(28vh, 220px);
-      pointer-events: none;
-      overflow: hidden;
-      z-index: -1;
+      position: fixed; left: 0; right: 0; bottom: 0;
+      height: min(28vh, 220px); pointer-events: none; overflow: hidden; z-index: -1;
     }
 
     .race-scene::before {
       content: "";
-      position: absolute;
-      left: -5%;
-      right: -5%;
-      bottom: 38px;
-      height: 72px;
+      position: absolute; left: -5%; right: -5%; bottom: 38px; height: 72px;
       background:
-        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.22) 0 56px, transparent 56px 116px),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.01));
-      border-top: 1px solid rgba(69, 214, 255, 0.28);
-      border-bottom: 1px solid rgba(255, 63, 215, 0.22);
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.22) 0 56px, transparent 56px 116px),
+        linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
+      border-top: 1px solid rgba(69,214,255,0.28);
+      border-bottom: 1px solid rgba(255,63,215,0.22);
       transform: perspective(360px) rotateX(58deg);
       transform-origin: bottom center;
       animation: roadRush 1.1s linear infinite;
     }
 
     .race-scene::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 98px;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, rgba(69, 214, 255, 0.8), rgba(255, 63, 215, 0.7), transparent);
-      box-shadow: 0 0 18px rgba(69, 214, 255, 0.45);
+      content: ""; position: absolute; left: 0; right: 0; bottom: 98px; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(69,214,255,0.8), rgba(255,63,215,0.7), transparent);
+      box-shadow: 0 0 18px rgba(69,214,255,0.45);
       animation: horizonPulse 2.4s ease-in-out infinite;
     }
 
     .race-car {
-      position: absolute;
-      left: -230px;
-      bottom: 74px;
-      width: 210px;
-      height: 76px;
-      filter: drop-shadow(0 0 18px rgba(255, 63, 215, 0.6));
-      animation: carLap 7s cubic-bezier(.45, .02, .35, 1) infinite;
+      position: absolute; left: -230px; bottom: 74px; width: 210px; height: 76px;
+      filter: drop-shadow(0 0 18px rgba(255,63,215,0.6));
+      animation: carLap 7s cubic-bezier(.45,.02,.35,1) infinite;
     }
 
     .race-car::before {
-      content: "";
-      position: absolute;
-      left: 18px;
-      right: 8px;
-      bottom: 24px;
-      height: 30px;
+      content: ""; position: absolute; left: 18px; right: 8px; bottom: 24px; height: 30px;
       background:
-        linear-gradient(90deg, rgba(69, 214, 255, 0.95), rgba(255, 63, 215, 0.98) 58%, #ffffff 59% 63%, rgba(255, 63, 215, 0.95) 64%),
+        linear-gradient(90deg, rgba(69,214,255,0.95), rgba(255,63,215,0.98) 58%, #fff 59% 63%, rgba(255,63,215,0.95) 64%),
         linear-gradient(180deg, rgba(255,255,255,0.35), transparent);
       clip-path: polygon(0 72%, 8% 42%, 33% 36%, 45% 0, 68% 0, 82% 35%, 100% 50%, 95% 83%, 10% 88%);
       border-radius: 22px 34px 18px 18px;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), 0 0 24px rgba(69, 214, 255, 0.32);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.5), 0 0 24px rgba(69,214,255,0.32);
     }
 
     .race-car::after {
-      content: "";
-      position: absolute;
-      left: -120px;
-      bottom: 36px;
-      width: 138px;
-      height: 14px;
-      background: linear-gradient(90deg, transparent, rgba(69, 214, 255, 0.12), rgba(255, 63, 215, 0.8));
-      filter: blur(2px);
-      border-radius: 999px;
+      content: ""; position: absolute; left: -120px; bottom: 36px; width: 138px; height: 14px;
+      background: linear-gradient(90deg, transparent, rgba(69,214,255,0.12), rgba(255,63,215,0.8));
+      filter: blur(2px); border-radius: 999px;
     }
 
     .wheel {
-      position: absolute;
-      bottom: 11px;
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle, #f8fbff 0 12%, #1b1b25 13% 36%, #050509 37% 100%);
-      border: 3px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 12px rgba(69, 214, 255, 0.45);
+      position: absolute; bottom: 11px; width: 34px; height: 34px; border-radius: 50%;
+      background: radial-gradient(circle, #f8fbff 0 12%, #1b1b25 13% 36%, #050509 37% 100%);
+      border: 3px solid rgba(255,255,255,0.2); box-shadow: 0 0 12px rgba(69,214,255,0.45);
       animation: wheelSpin 0.45s linear infinite;
     }
-
     .wheel.front { right: 28px; }
     .wheel.back { left: 34px; }
 
+    /* ── Layout ── */
     .container {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 64px 20px 72px;
+      padding: 48px 20px 80px;
       position: relative;
     }
 
+    /* ── Hero ── */
     .hero {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(145deg, rgba(26, 24, 38, 0.92), rgba(8, 9, 16, 0.86));
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 24px;
-      padding: 32px;
-      box-shadow:
-        0 28px 80px rgba(0, 0, 0, 0.48),
-        0 0 44px rgba(193, 59, 198, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.13);
-      margin-bottom: 28px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
+      position: relative; overflow: hidden;
+      background: linear-gradient(145deg, rgba(26,24,38,0.92), rgba(8,9,16,0.86));
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 24px; padding: 28px 32px;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.48), 0 0 44px rgba(193,59,198,0.18), inset 0 1px 0 rgba(255,255,255,0.13);
+      margin-bottom: 20px;
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px;
       backdrop-filter: blur(18px);
-      animation: panelIn 0.8s cubic-bezier(.2, .8, .2, 1) both;
+      animation: panelIn 0.8s cubic-bezier(.2,.8,.2,1) both;
     }
 
     .hero::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
+      content: ""; position: absolute; inset: -1px;
       background:
-        linear-gradient(120deg, transparent 0 32%, rgba(255, 255, 255, 0.2) 45%, transparent 58% 100%),
-        radial-gradient(circle at top left, rgba(255, 63, 215, 0.22), transparent 32%),
-        radial-gradient(circle at bottom right, rgba(69, 214, 255, 0.18), transparent 34%);
-      opacity: 0.75;
-      transform: translateX(-45%);
-      animation: cardShine 5.5s ease-in-out infinite;
-      pointer-events: none;
+        linear-gradient(120deg, transparent 0 32%, rgba(255,255,255,0.2) 45%, transparent 58% 100%),
+        radial-gradient(circle at top left, rgba(255,63,215,0.22), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(69,214,255,0.18), transparent 34%);
+      opacity: 0.75; transform: translateX(-45%);
+      animation: cardShine 5.5s ease-in-out infinite; pointer-events: none;
     }
 
-    .hero > * {
-      position: relative;
-      z-index: 1;
+    .hero > * { position: relative; z-index: 1; }
+
+    /* Logo dans le hero */
+    .hero-logo {
+      height: 64px;
+      width: auto;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 12px rgba(193,59,198,0.4));
+      flex-shrink: 0;
     }
 
-    .hero-text {
-      max-width: 700px;
-    }
+    .hero-text { flex: 1; min-width: 200px; }
 
     h1 {
-      margin: 0 0 12px;
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      letter-spacing: 0;
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
       text-transform: uppercase;
       background: linear-gradient(92deg, #fff 8%, #ffc8fb 38%, var(--accent-3) 78%, #fff 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-shadow: 0 0 28px rgba(255, 63, 215, 0.26);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
       animation: titleGlow 3s ease-in-out infinite;
+      line-height: 1.1; margin-bottom: 6px;
     }
 
-    p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 1rem;
-      max-width: 900px;
+    .hero-sub {
+      color: var(--muted); font-size: 0.9rem; line-height: 1.5;
     }
 
-    .hero-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
-      padding: 12px 20px;
-      border-radius: 999px;
-      border: 1px solid rgba(255, 255, 255, 0.18);
+      display: inline-flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      padding: 11px 20px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
       background: linear-gradient(90deg, var(--accent), var(--hot), var(--accent-3));
       background-size: 220% 100%;
-      color: #fff;
-      font-weight: bold;
-      font-size: 0.95rem;
-      text-decoration: none;
-      white-space: nowrap;
-      box-shadow: 0 14px 34px rgba(193, 59, 198, 0.28);
-      transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+      color: #fff; font-weight: bold; font-size: 0.9rem; text-decoration: none;
+      white-space: nowrap; min-height: 44px;
+      box-shadow: 0 14px 34px rgba(193,59,198,0.28);
+      transition: transform 0.22s, box-shadow 0.22s, filter 0.22s;
       animation: buttonFlow 4s ease infinite;
     }
 
     .btn::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(115deg, transparent 0 34%, rgba(255, 255, 255, 0.34) 46%, transparent 58% 100%);
-      transform: translateX(-120%);
-      transition: transform 0.55s ease;
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(115deg, transparent 0 34%, rgba(255,255,255,0.34) 46%, transparent 58% 100%);
+      transform: translateX(-120%); transition: transform 0.55s;
     }
+    .btn:hover { filter: brightness(1.08); transform: translateY(-2px); }
+    .btn:hover::before { transform: translateX(120%); }
 
-    .btn:hover {
-      filter: brightness(1.08);
-      transform: translateY(-2px);
-      box-shadow: 0 18px 42px rgba(69, 214, 255, 0.24), 0 12px 34px rgba(255, 63, 215, 0.22);
-    }
-
-    .btn:hover::before {
-      transform: translateX(120%);
-    }
-
-    .btn-secondary {
-      background: transparent;
+    /* ── Status bar ── */
+    .status-bar {
+      padding: 8px 16px;
+      font-size: 0.85rem;
       color: var(--muted);
-    }
-
-    .table-card {
-      background: linear-gradient(145deg, rgba(20, 20, 31, 0.92), rgba(8, 9, 16, 0.88));
-      border: 1px solid rgba(255, 255, 255, 0.13);
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 24px 72px rgba(0, 0, 0, 0.45), 0 0 35px rgba(69, 214, 255, 0.1);
-      backdrop-filter: blur(18px);
-      animation: panelIn 0.8s 0.12s cubic-bezier(.2, .8, .2, 1) both;
-    }
-
-    .status {
-      padding: 10px 18px;
       border-bottom: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.9rem;
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255,255,255,0.02);
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .status-bar.error { color: var(--error); }
+    .status-bar.success { color: var(--success); }
+
+    /* ── Count badge ── */
+    .count-badge {
+      background: rgba(193,59,198,0.18);
+      color: #ffc8fb;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      letter-spacing: 0.5px;
     }
 
-    .status.error {
-      color: var(--error);
+    /* ── Table card ── */
+    .table-card {
+      background: linear-gradient(145deg, rgba(20,20,31,0.92), rgba(8,9,16,0.88));
+      border: 1px solid rgba(255,255,255,0.13);
+      border-radius: 20px; overflow: hidden;
+      box-shadow: 0 24px 72px rgba(0,0,0,0.45), 0 0 35px rgba(69,214,255,0.1);
+      backdrop-filter: blur(18px);
+      animation: panelIn 0.8s 0.12s cubic-bezier(.2,.8,.2,1) both;
     }
 
-    .status.success {
-      color: var(--success);
-    }
+    /* ── PC Table ── */
+    .table-wrap { overflow-x: auto; }
 
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 560px;
-    }
+    table { width: 100%; border-collapse: collapse; min-width: 400px; }
 
     thead {
       background: linear-gradient(90deg, var(--accent), var(--hot), var(--accent-3));
@@ -332,150 +251,118 @@
       animation: buttonFlow 5s ease infinite;
     }
 
-    th, td {
-      padding: 8px 12px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
+    th, td { padding: 10px 16px; text-align: left; border-bottom: 1px solid var(--border); }
 
-    th {
-      font-size: 0.95rem;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-    }
+    th { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
 
-    tbody tr:hover {
-      background: rgba(69, 214, 255, 0.07);
-      box-shadow: inset 3px 0 0 rgba(255, 63, 215, 0.9);
-    }
+    tbody tr { transition: background 0.15s; }
+    tbody tr:hover { background: rgba(69,214,255,0.07); box-shadow: inset 3px 0 0 rgba(255,63,215,0.9); }
+    tbody tr:last-child td { border-bottom: none; }
 
-    td:last-child, th:last-child {
-      text-align: center;
-      width: 180px;
-    }
+    .numero-col { text-align: center; width: 120px; font-weight: 700; font-size: 1.05rem; color: var(--accent-3); }
+    th.numero-col { text-align: center; }
 
-    .number-col, th.number-col {
-      text-align: center;
-      width: 160px;
-    }
-
-    .points {
-      display: inline-block;
-      min-width: 54px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(138, 15, 143, 0.22);
-      color: #f8d5ff;
-      font-weight: bold;
-      font-size: 0.9rem;
-      box-shadow: 0 0 18px rgba(255, 63, 215, 0.16);
+    .points-badge {
+      display: inline-block; min-width: 48px;
+      padding: 3px 10px; border-radius: 999px;
+      background: rgba(138,15,143,0.22); color: #f8d5ff;
+      font-weight: bold; font-size: 0.88rem;
+      box-shadow: 0 0 14px rgba(255,63,215,0.14);
     }
 
     .empty {
-      color: #d9d9e3;
-      opacity: 0.8;
-      font-style: italic;
-      text-align: center;
+      color: #d9d9e3; opacity: 0.7; font-style: italic;
+      text-align: center; padding: 32px !important;
     }
 
-    @keyframes gridDrift {
-      from { background-position: 0 0, 0 0; }
-      to { background-position: 58px 58px, 58px 58px; }
+    /* ── Mobile card list ── */
+    .pilot-cards { display: none; }
+
+    .pilot-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
     }
 
-    @keyframes speedLines {
-      0%, 100% { opacity: 0.18; transform: translateX(-20%); }
-      50% { opacity: 0.46; transform: translateX(10%); }
+    .pilot-card:last-child { border-bottom: none; }
+    .pilot-card:hover { background: rgba(69,214,255,0.06); }
+
+    .pilot-num {
+      min-width: 42px; height: 42px;
+      border-radius: 10px;
+      background: rgba(69,214,255,0.1);
+      border: 1px solid rgba(69,214,255,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 900; font-size: 1rem; color: var(--accent-3);
+      flex-shrink: 0;
     }
 
-    @keyframes panelIn {
-      from { opacity: 0; transform: translateY(22px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    .pilot-info { flex: 1; min-width: 0; }
+    .pilot-pseudo { font-weight: 700; font-size: 0.95rem; truncate: ellipsis; overflow: hidden; white-space: nowrap; }
+    .pilot-points { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
 
-    @keyframes cardShine {
-      0%, 58%, 100% { transform: translateX(-48%); opacity: 0.45; }
-      72% { transform: translateX(40%); opacity: 0.9; }
-    }
-
-    @keyframes titleGlow {
-      0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 63, 215, 0.2)); }
-      50% { filter: drop-shadow(0 0 18px rgba(69, 214, 255, 0.32)); }
-    }
-
-    @keyframes buttonFlow {
-      0%, 100% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-    }
-
-    @keyframes showroomMove {
-      from { transform: scale(1.02) translate3d(-1.2%, -0.6%, 0); }
-      to { transform: scale(1.08) translate3d(1.2%, 0.8%, 0); }
-    }
-
-    @keyframes roadRush {
-      from { background-position: 0 0, 0 0; }
-      to { background-position: -116px 0, 0 0; }
-    }
-
-    @keyframes horizonPulse {
-      0%, 100% { opacity: 0.38; transform: scaleX(0.9); }
-      50% { opacity: 0.9; transform: scaleX(1); }
-    }
-
+    /* ── Animations ── */
+    @keyframes gridDrift { from { background-position:0 0,0 0; } to { background-position:58px 58px,58px 58px; } }
+    @keyframes speedLines { 0%,100% { opacity:.18; transform:translateX(-20%); } 50% { opacity:.46; transform:translateX(10%); } }
+    @keyframes panelIn { from { opacity:0; transform:translateY(22px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes cardShine { 0%,58%,100% { transform:translateX(-48%); opacity:.45; } 72% { transform:translateX(40%); opacity:.9; } }
+    @keyframes titleGlow { 0%,100% { filter:drop-shadow(0 0 8px rgba(255,63,215,.2)); } 50% { filter:drop-shadow(0 0 18px rgba(69,214,255,.32)); } }
+    @keyframes buttonFlow { 0%,100% { background-position:0% 50%; } 50% { background-position:100% 50%; } }
+    @keyframes showroomMove { from { transform:scale(1.02) translate3d(-1.2%,-0.6%,0); } to { transform:scale(1.08) translate3d(1.2%,0.8%,0); } }
+    @keyframes roadRush { from { background-position:0 0,0 0; } to { background-position:-116px 0,0 0; } }
+    @keyframes horizonPulse { 0%,100% { opacity:.38; transform:scaleX(.9); } 50% { opacity:.9; transform:scaleX(1); } }
     @keyframes carLap {
-      0% { transform: translateX(0) translateY(8px) scale(0.92); opacity: 0; }
-      10% { opacity: 1; }
-      48% { transform: translateX(calc(100vw + 260px)) translateY(-5px) scale(1.05); opacity: 1; }
-      49% { opacity: 0; }
-      62% { transform: translateX(calc(100vw + 260px)) translateY(10px) scale(0.82) rotateY(180deg); opacity: 0; }
-      72% { opacity: 0.75; }
-      100% { transform: translateX(-260px) translateY(4px) scale(0.82) rotateY(180deg); opacity: 0; }
+      0% { transform:translateX(0) translateY(8px) scale(.92); opacity:0; }
+      10% { opacity:1; }
+      48% { transform:translateX(calc(100vw + 260px)) translateY(-5px) scale(1.05); opacity:1; }
+      49% { opacity:0; }
+      62% { transform:translateX(calc(100vw + 260px)) translateY(10px) scale(.82) rotateY(180deg); opacity:0; }
+      72% { opacity:.75; }
+      100% { transform:translateX(-260px) translateY(4px) scale(.82) rotateY(180deg); opacity:0; }
     }
+    @keyframes wheelSpin { to { transform:rotate(360deg); } }
 
-    @keyframes wheelSpin {
-      to { transform: rotate(360deg); }
-    }
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .container { padding: 20px 12px 80px; }
 
-    @media (max-width: 620px) {
-      .container {
-        padding: 34px 14px 44px;
-      }
+      .hero { padding: 18px 16px; border-radius: 18px; }
 
-      .hero {
-        border-radius: 18px;
-        padding: 24px 18px;
-      }
+      .hero-logo { height: 44px; }
+      h1 { font-size: 1.4rem; }
+      .hero-sub { display: none; }
+      .hero-actions .btn { font-size: 0.85rem; padding: 9px 16px; }
 
-      .hero-actions,
-      .btn {
-        width: 100%;
-      }
+      /* Masquer la table, afficher les cards */
+      .table-wrap { display: none; }
+      .pilot-cards { display: block; }
 
-      th, td {
-        padding: 10px;
-      }
+      .race-scene { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-      }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
     }
   </style>
 </head>
 <body>
+  <div class="showroom-bg"></div>
+  <div class="race-scene">
+    <div class="race-car">
+      <div class="wheel front"></div>
+      <div class="wheel back"></div>
+    </div>
+  </div>
+
   <main class="container">
     <section class="hero">
+      <img class="hero-logo" src="xmt-logo.png" alt="XMT – Xray Motorsport Team" />
       <div class="hero-text">
-        <h1>Liste pilotes XMT</h1>
-        <p>
-          Vous pouvez retrouver ci-dessous la liste des pilotes ayant fait leur entrylist pour participer aux courses XMT.
-        </p>
+        <h1>Liste Pilotes</h1>
+        <p class="hero-sub">Pilotes inscrits sur l'entrylist XMT pour les courses du serveur.</p>
       </div>
       <div class="hero-actions">
         <a class="btn" href="entrylist_form.html">Faire son entrylist</a>
@@ -483,284 +370,166 @@
     </section>
 
     <section class="table-card">
+      <div class="status-bar" id="statusBar">Chargement des pilotes...</div>
+
+      <!-- PC : table -->
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
+              <th class="numero-col">#</th>
               <th>Pseudo</th>
-              <th class="number-col">Numéro</th>
-              <th>Points licence</th>
+              <th>Points Licence</th>
             </tr>
           </thead>
-          <tbody id="pilotsTableBody">
-            <tr>
-              <td colspan="3" class="empty">Chargement des pilotes...</td>
-            </tr>
+          <tbody id="tableBody">
+            <tr><td colspan="3" class="empty">Chargement...</td></tr>
           </tbody>
         </table>
+      </div>
+
+      <!-- Mobile : cards -->
+      <div class="pilot-cards" id="cardList">
+        <div style="padding:24px;text-align:center;color:var(--muted);font-style:italic">Chargement...</div>
       </div>
     </section>
   </main>
 
   <script>
-    // URL CSV publiée depuis Google Sheets (Fichier -> Publier sur le Web, format CSV)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxTILGoua3WpneTTlu1r06tE5_aJeJvfam6XYk4rSWklXsgnNYIpr8NFui87-AObu_3cg/exec";
 
-    async function loadFromSheetOld() {
-      const tbody = document.getElementById('pilotsTableBody');
-      const status = document.getElementById('status');
+    const tableBody = document.getElementById("tableBody");
+    const cardList  = document.getElementById("cardList");
+    const statusBar = document.getElementById("statusBar");
 
+    async function loadPilots() {
       try {
-        const response = await fetch(SHEET_CSV_URL + "&_=" + Date.now());
-
-        if (!response.ok) {
-          throw new Error("Impossible de récupérer le CSV Google Sheets");
-        }
-
-        const csvText = await response.text();
-
-        const normalizedText = csvText
-          .replace(/\r\n/g, "\n")
-          .replace(/\r/g, "\n")
-          .trim();
-
-        const lines = normalizedText
-          .split("\n")
-          .map(line => line.trim())
-          .filter(line => line.length > 0);
-
-        if (lines.length < 2) {
-          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucune donnée trouvée dans la feuille.</td></tr>';
-          status.textContent = "Feuille chargée, mais vide.";
-          status.className = "status";
-          return;
-        }
-
-        const separator = lines[0].includes(";") ? ";" : ",";
-        const headers = lines[0]
-          .split(separator)
-          .map(h => h.trim().replace(/^"|"$/g, "").toLowerCase());
-
-        const pseudoIndex = headers.findIndex(h => h === "pseudo");
-        const numeroIndex = headers.findIndex(h => h === "numero pilote" || h === "numéro pilote" || h === "numero");
-        const pointsIndex = headers.findIndex(h => h === "points licence");
-
-        if (pseudoIndex === -1 || numeroIndex === -1 || pointsIndex === -1) {
-          throw new Error("Colonnes attendues dans la feuille : Pseudo, Numero pilote, Points licence");
-        }
-
-        const rows = lines.slice(1)
-          .map(line => line.split(separator).map(cell => cell.trim().replace(/^"|"$/g, "")))
-          .filter(cols => cols.some(cell => cell !== ""));
-
-        if (rows.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucun pilote trouvé.</td></tr>';
-          status.textContent = "Feuille chargée, mais aucune ligne exploitable.";
-          status.className = "status";
-          return;
-        }
-
-        tbody.innerHTML = "";
-
-        rows.forEach(cols => {
-          const pseudo = cols[pseudoIndex] || "—";
-          const numero = cols[numeroIndex] || "—";
-          const points = cols[pointsIndex] || "—";
-
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-            <td>${escapeHtml(pseudo)}</td>
-            <td class="number-col">${escapeHtml(numero)}</td>
-            <td><span class="points">${escapeHtml(points)}</span></td>
-          `;
-          tbody.appendChild(tr);
-        });
-
-        status.className = "status success";
-
-      } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger les pilotes.</td></tr>';
-        status.textContent = "Erreur : " + error.message;
-        status.className = "status error";
-        console.error(error);
-      }
-    }
-
-    function escapeHtml(value) {
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    async function loadFromSheet() {
-      const tbody = document.getElementById("pilotsTableBody");
-      const status = document.getElementById("status");
-
-      try {
-        const payload = await loadAppsScriptData();
-        const pilots = normalizePilots(payload);
+        const payload = await fetchData();
+        const pilots  = normalizePilots(payload);
 
         if (pilots.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="3" class="empty">Aucun pilote trouve.</td></tr>';
-          status.textContent = "Apps Script charge, mais aucune ligne exploitable n'a ete renvoyee.";
-          status.className = "status";
+          tableBody.innerHTML = '<tr><td colspan="3" class="empty">Aucun pilote trouvé.</td></tr>';
+          cardList.innerHTML  = '<div style="padding:24px;text-align:center;color:var(--muted);font-style:italic">Aucun pilote trouvé.</div>';
+          statusBar.textContent = "Feuille chargée — aucune entrée.";
+          statusBar.className = "status-bar";
           return;
         }
 
-        tbody.innerHTML = "";
-
-        pilots.forEach((pilot) => {
+        // Table (PC)
+        tableBody.innerHTML = "";
+        pilots.forEach(p => {
           const tr = document.createElement("tr");
-          const pseudoCell = document.createElement("td");
-          const numeroCell = document.createElement("td");
-          const pointsCell = document.createElement("td");
-          const pointsBadge = document.createElement("span");
-
-          numeroCell.className = "number-col";
-          pointsBadge.className = "points";
-
-          pseudoCell.textContent = pilot.pseudo || "-";
-          numeroCell.textContent = pilot.numero || "-";
-          pointsBadge.textContent = pilot.points || "0";
-
-          pointsCell.appendChild(pointsBadge);
-          tr.appendChild(pseudoCell);
-          tr.appendChild(numeroCell);
-          tr.appendChild(pointsCell);
-          tbody.appendChild(tr);
+          tr.innerHTML = `
+            <td class="numero-col">${esc(p.numero)}</td>
+            <td>${esc(p.pseudo)}</td>
+            <td><span class="points-badge">${esc(p.points)}</span></td>`;
+          tableBody.appendChild(tr);
         });
 
-        status.className = "status success";
-      } catch (error) {
-        tbody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger les pilotes.</td></tr>';
-        status.textContent = "Erreur : " + error.message;
-        status.className = "status error";
-        console.error(error);
+        // Cards (mobile)
+        cardList.innerHTML = "";
+        pilots.forEach(p => {
+          const div = document.createElement("div");
+          div.className = "pilot-card";
+          div.innerHTML = `
+            <div class="pilot-num">${esc(p.numero)}</div>
+            <div class="pilot-info">
+              <div class="pilot-pseudo">${esc(p.pseudo)}</div>
+              <div class="pilot-points">${esc(p.points)} pts licence</div>
+            </div>`;
+          cardList.appendChild(div);
+        });
+
+        const badge = `<span class="count-badge">${pilots.length} pilote${pilots.length > 1 ? "s" : ""}</span>`;
+        statusBar.innerHTML = badge + " inscrits";
+        statusBar.className = "status-bar success";
+
+      } catch (err) {
+        tableBody.innerHTML = '<tr><td colspan="3" class="empty">Impossible de charger la liste.</td></tr>';
+        cardList.innerHTML  = '<div style="padding:24px;text-align:center;color:var(--error)">Impossible de charger la liste.</div>';
+        statusBar.textContent = "Erreur : " + err.message;
+        statusBar.className = "status-bar error";
+        console.error(err);
       }
     }
 
-    async function loadAppsScriptData() {
+    async function fetchData() {
       const url = WEB_APP_URL + "?action=list&_=" + Date.now();
-
       try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error("Reponse Apps Script invalide");
-        }
-        return parseAppsScriptText(await response.text());
-      } catch (error) {
-        return loadAppsScriptJsonp();
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("réponse invalide");
+        const text = await res.text();
+        return JSON.parse(text.trim().replace(/^[^(]+\(([\s\S]*)\);?$/, "$1"));
+      } catch (_) {
+        return fetchJsonp();
       }
     }
 
-    function loadAppsScriptJsonp() {
+    function fetchJsonp() {
       return new Promise((resolve, reject) => {
-        const callbackName = "__entrylistCallback_" + Date.now();
+        const cb = "__xmt_" + Date.now();
         const script = document.createElement("script");
-        const timeout = window.setTimeout(() => {
-          cleanup();
-          reject(new Error("L'Apps Script doit renvoyer du JSON ou supporter le parametre callback pour la liste."));
-        }, 8000);
-
-        window[callbackName] = (payload) => {
-          cleanup();
-          resolve(payload);
-        };
-
-        script.onerror = () => {
-          cleanup();
-          reject(new Error("Impossible de charger les donnees Apps Script."));
-        };
-
-        script.src = WEB_APP_URL + "?action=list&callback=" + callbackName + "&_=" + Date.now();
+        const timer = setTimeout(() => { cleanup(); reject(new Error("Timeout Apps Script")); }, 8000);
+        window[cb] = (data) => { cleanup(); resolve(data); };
+        script.onerror = () => { cleanup(); reject(new Error("Impossible de charger les données.")); };
+        script.src = WEB_APP_URL + "?action=list&callback=" + cb + "&_=" + Date.now();
         document.body.appendChild(script);
-
-        function cleanup() {
-          window.clearTimeout(timeout);
-          delete window[callbackName];
-          script.remove();
-        }
+        function cleanup() { clearTimeout(timer); delete window[cb]; script.remove(); }
       });
     }
 
-    function parseAppsScriptText(text) {
-      const trimmed = text.trim();
-      const jsonpMatch = trimmed.match(/^[^(]+\(([\s\S]*)\);?$/);
-      return JSON.parse(jsonpMatch ? jsonpMatch[1] : trimmed);
-    }
-
     function normalizePilots(payload) {
-      const source = Array.isArray(payload)
-        ? payload
-        : payload && (payload.data || payload.rows || payload.entries || payload.pilotes || payload.pilots || payload.values);
+      const source = Array.isArray(payload)             ? payload
+                   : Array.isArray(payload?.rows)       ? payload.rows
+                   : Array.isArray(payload?.data)       ? payload.data
+                   : Array.isArray(payload?.entries)    ? payload.entries
+                   : null;
 
-      if (!Array.isArray(source)) {
-        return [];
-      }
+      if (!source) return [];
 
       if (source.length > 0 && Array.isArray(source[0])) {
-        return normalizeArrayRows(source);
+        // Tableau brut — nouvelle structure sans gamertag
+        // [timestamp, pseudo, id, numeroPilote, pointsLicence]
+        const first = source[0].map(v => nk(v));
+        const hasHeaders = first.some(k => ["pseudo","numeropilote","pointslicence"].includes(k));
+        const rows = hasHeaders ? source.slice(1) : source;
+        return rows
+          .filter(r => r.some(c => String(c || "").trim()))
+          .map(r => hasHeaders
+            ? { pseudo: r[findH(first,["pseudo","nom"])] || "", numero: r[findH(first,["numeropilote","numero","num"])] || "", points: r[findH(first,["pointslicence","points"])] || "10" }
+            : { pseudo: r[1] || "", numero: r[3] || "", points: r[4] || "10" }
+          )
+          .filter(p => p.pseudo || p.numero);
       }
 
       return source
-        .filter((row) => row && typeof row === "object")
-        .map((row) => ({
-          pseudo: pickValue(row, ["pseudo", "nom", "pilote", "joueur", "name"]),
-          numero: pickValue(row, ["numeroPilote", "numero pilote", "numero", "num", "n", "number"]),
-          points: pickValue(row, ["pointsLicence", "points licence", "points", "licence"])
+        .filter(r => r && typeof r === "object")
+        .map(r => ({
+          pseudo:  pick(r, ["pseudo","nom","pilote","name"]),
+          numero:  pick(r, ["numeroPilote","numero","num","n","number"]),
+          points:  pick(r, ["pointsLicence","points","licence"]) || "10"
         }))
-        .filter((pilot) => pilot.pseudo || pilot.numero || pilot.points);
+        .filter(p => p.pseudo || p.numero);
     }
 
-    function normalizeArrayRows(rows) {
-      const firstRow = rows[0].map(String);
-      const headerMap = firstRow.map(normalizeKey);
-      const hasHeaders = headerMap.some((key) => ["pseudo", "numeropilote", "numero", "pointslicence"].includes(key));
-      const dataRows = hasHeaders ? rows.slice(1) : rows;
-
-      return dataRows
-        .filter((row) => Array.isArray(row) && row.some((cell) => String(cell || "").trim() !== ""))
-        .map((row) => {
-          if (hasHeaders) {
-            return {
-              pseudo: row[findHeader(headerMap, ["pseudo", "nom", "pilote", "joueur", "name"])] || "",
-              numero: row[findHeader(headerMap, ["numeropilote", "numero", "num", "n", "number"])] || "",
-              points: row[findHeader(headerMap, ["pointslicence", "points", "licence"])] || ""
-            };
-          }
-
-          return {
-            pseudo: row[2] || row[1] || "",
-            numero: row[4] || row[3] || "",
-            points: row[5] || "0"
-          };
-        })
-        .filter((pilot) => pilot.pseudo || pilot.numero || pilot.points);
+    function pick(obj, keys) {
+      const k = Object.keys(obj).find(k => keys.map(nk).includes(nk(k)));
+      return k ? String(obj[k] || "") : "";
     }
 
-    function pickValue(row, names) {
-      const normalizedNames = names.map(normalizeKey);
-      const key = Object.keys(row).find((item) => normalizedNames.includes(normalizeKey(item)));
-      return key ? row[key] : "";
+    function findH(headers, names) {
+      return headers.findIndex(h => names.map(nk).includes(h));
     }
 
-    function findHeader(headers, names) {
-      const normalizedNames = names.map(normalizeKey);
-      return headers.findIndex((header) => normalizedNames.includes(header));
+    function nk(v) {
+      return String(v || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]/g,"");
     }
 
-    function normalizeKey(value) {
-      return String(value || "")
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]/g, "");
+    function esc(v) {
+      return String(v || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
     }
 
-    loadFromSheet();
+    loadPilots();
   </script>
 </body>
 </html>
